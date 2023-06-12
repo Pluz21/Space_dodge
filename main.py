@@ -24,7 +24,7 @@ SPACESHIP_WIDTH = 150
 BG = pygame.image.load("media/space_background.jpeg")
 SpaceShip = pygame.image.load('media/spaceshipmain.png')
 SpaceShip_scaled = pygame.transform.scale(SpaceShip, (SPACESHIP_WIDTH, SPACESHIP_HEIGHT))
-FONT = pygame.font.SysFont("arial", 30)
+FONT = pygame.font.SysFont("Orbitron", 35)
 Bossstar = pygame.image.load("media/bossstar3.png")
 Bossstar_scaled = pygame.transform.scale(Bossstar, (BOSS_STAR_WIDTH, BOSS_STAR_HEIGHT))
 
@@ -37,7 +37,7 @@ PLAYER_VEL = 10
 BONUS_RADIUS = 15
 BONUS_COLOR = (255, 0, 0)
 BONUS_TEXT_COLOR = (255, 255, 255)
-BONUS_FONT = pygame.font.SysFont("arial", 20)
+BONUS_FONT = pygame.font.SysFont("Quantico", 20)
 BONUS_VEL = 8
 SPAWN_BONUS_INTERVAL = 200
 
@@ -56,7 +56,7 @@ PROJECTILE_VEL = 15
 SPAWN_PROJECTILE_INTERVAL = 1000  # in milliseconds
 
 # Define font and timer variables
-TIMER_FONT = pygame.font.SysFont("arial", 30)
+TIMER_FONT = pygame.font.SysFont("Orbitron", 30)
 
 class Player:
     def __init__(self, x, y):
