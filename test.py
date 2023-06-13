@@ -15,7 +15,7 @@ pygame.mixer.music.load('sounds/music2.WAV')
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)  # Set -1 to loop the music indefinitely
 
-# Load images and fonts
+
 # Define the actual width and height of the boss star image
 BOSS_STAR_WIDTH = 400
 BOSS_STAR_HEIGHT = 300
@@ -24,7 +24,7 @@ SPACESHIP_WIDTH = 150
 scroll = - HEIGHT // 0.15
 scroll_speed = 1  # Adjust the scroll speed as needed
 
-
+# Load images and fonts
 BG = pygame.image.load("media/full_background.png").convert_alpha()
 
 SpaceShip = pygame.image.load('media/spaceshipmain.png')
@@ -214,9 +214,6 @@ power_up_sound = pygame.mixer.Sound('sounds/power_up.wav')
 shoot_sound.set_volume(0.1)  # Adjust the volume level as needed
 power_up_sound.set_volume(0.7) 
 
-# Cooldown duration in milliseconds (adjust as desired) this is to reduce fire rate with spacebar
-SHOOT_COOLDOWN = 3000  
-LAST_SHOT_TIME = 0
 
 
 
@@ -379,7 +376,7 @@ while not game_over:
                 projectiles.append(projectile)
             spawn_projectile_time = pygame.time.get_ticks()
             shoot_sound.play()  # Play the shoot sound effect
-            LAST_SHOT_TIME = current_time
+
 
     # Spawn stars randomly
     if random.randint(0, 100) < 3: # Adjust to increase difficulty (3 is easy, 8 is hardcore)

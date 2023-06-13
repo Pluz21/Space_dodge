@@ -15,13 +15,18 @@ pygame.mixer.music.load('sounds/music2.WAV')
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)  # Set -1 to loop the music indefinitely
 
-# Load images and fonts
+
 # Define the actual width and height of the boss star image
 BOSS_STAR_WIDTH = 400
 BOSS_STAR_HEIGHT = 300
 SPACESHIP_HEIGHT = 135
 SPACESHIP_WIDTH = 150
-BG = pygame.image.load("media/space_background.jpeg")
+scroll = - HEIGHT // 0.15
+scroll_speed = 1  # Adjust the scroll speed as needed
+
+# Load images and fonts
+BG = pygame.image.load("media/full_background.png").convert_alpha()
+
 SpaceShip = pygame.image.load('media/spaceshipmain.png')
 SpaceShip_scaled = pygame.transform.scale(SpaceShip, (SPACESHIP_WIDTH, SPACESHIP_HEIGHT))
 FONT = pygame.font.SysFont("Orbitron", 35)
@@ -57,7 +62,9 @@ TIMER_FONT = pygame.font.SysFont("Orbitron", 30)
 
 class Player:
     def __init__(self, x, y):
-        self.rect = pygame.Rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
+        player_hitbox_width = 104  # Define the width of the hitbox
+        player_hitbox_height = 120  # Define the height of the hitbox
+        self.rect = pygame.Rect(x, y, player_hitbox_width, player_hitbox_height)
         self.side_shooting_enabled = False
     
     # Checking that movement is within window boundaries
@@ -158,10 +165,13 @@ class Bonus:
 
 class BossStar:
     def __init__(self, x, y):
-        self.rect = pygame.Rect(x, y, BOSS_STAR_WIDTH, BOSS_STAR_HEIGHT)
+        boss_star_hitbox_width = 350  # Define the width of the hitbox
+        boss_star_hitbox_height = 200  # Define the height of the hitbox
+        self.rect = pygame.Rect(x, y, boss_star_hitbox_width, boss_star_hitbox_height)
         self.health = boss_star_health
-        self.vel = boss_star_missile_vel
+        self.vel = boss_star_vel
 
+        
     def move(self):
         if self.rect.y < HEIGHT // 7:  # Check if the y-coordinate is less than half the screen height
             self.rect.y += self.vel / 10  # Move the object
@@ -204,9 +214,6 @@ power_up_sound = pygame.mixer.Sound('sounds/power_up.wav')
 shoot_sound.set_volume(0.1)  # Adjust the volume level as needed
 power_up_sound.set_volume(0.7) 
 
-# Cooldown duration in milliseconds (adjust as desired) this is to reduce fire rate with spacebar
-SHOOT_COOLDOWN = 3000  
-LAST_SHOT_TIME = 0
 
 
 
@@ -217,7 +224,8 @@ def update_score():
     score += 1
 
 def redraw_window():
-    WIN.blit(BG, (0, 0))
+    WIN.blit(BG, (0, scroll))
+   # Draw the player, stars, projectiles, bonuses, and score
     player.draw()
     for star in stars:
         star.draw()
@@ -229,17 +237,20 @@ def redraw_window():
     WIN.blit(score_text, (10, 10))
     bonus_score_text = FONT.render("Power: " + str(bonus_score), 1, (255, 255, 255))
     WIN.blit(bonus_score_text, (10, 50))
-    
+
     # Draw the timer
     elapsed_time = pygame.time.get_ticks() - start_time
     timer_text = TIMER_FONT.render(f"Time: {elapsed_time / 1000:.1f}", 1, (255, 255, 255))
     WIN.blit(timer_text, (10, 90))
 
-     # Draw the boss star if it is active
+    # Draw the boss star if it is active
     if boss_star_active:
         boss_star.draw()
-    
+
     pygame.display.update()
+
+
+
 
 def handle_collisions():
     global score, bonus_score
@@ -270,6 +281,10 @@ def handle_collisions():
     for star in stars:
         if player.rect.colliderect(star.rect):
             return True
+        
+    # Check collision between player and boss star
+    if boss_star_active and player.rect.colliderect(boss_star.rect):
+        return True
 
     return False
 
@@ -307,12 +322,12 @@ star_velocity_increase_timer = pygame.time.get_ticks()
 # Handle the boss star
 boss_star_active = False
 boss_star_health = 10
-boss_star_missile_vel = 10
-spawn_boss_star_time = 4000
+boss_star_vel = 40
+#spawn_boss_star_time = 4000
 boss_star = None
 
 start_time = pygame.time.get_ticks()  # Move this line before the game loop
-boss_star_respawn_timer = 15000  # Timer duration in milliseconds
+boss_star_respawn_timer = 15000  # Adapts boss spawn time ( First appearance as well)
 boss_star_respawn_time = 0  # Time when the boss star was defeated
 
 
@@ -326,7 +341,11 @@ except FileNotFoundError:
 
 
 while not game_over:
+    
     clock.tick(60)  # Limit the frame rate to 60 FPS
+    scroll += scroll_speed
+    if scroll >= HEIGHT:
+            scroll = 0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -339,8 +358,12 @@ while not game_over:
         player.move(PLAYER_VEL, 0)
     if keys[pygame.K_UP]:
         player.move(0, -PLAYER_VEL)
-    if keys[pygame.K_DOWN]:
+        """scroll += 0          You can use this to add scrolling to player upward movement"""  
+    if keys[pygame.K_DOWN] and scroll < 0:
         player.move(0, PLAYER_VEL)
+                               # Possibility to add a scroll factor here as well, to "reduce" scrolling speed
+
+
 
     current_time = pygame.time.get_ticks()
     if keys[pygame.K_SPACE]:
@@ -348,13 +371,12 @@ while not game_over:
             if bonus_score >= 3:
                 for projectile in player.shoot():
                     projectiles.append(projectile)
-                    # This lets us add 
             else:
                 projectile = player.shoot()[0]
                 projectiles.append(projectile)
             spawn_projectile_time = pygame.time.get_ticks()
             shoot_sound.play()  # Play the shoot sound effect
-            LAST_SHOT_TIME = current_time
+
 
     # Spawn stars randomly
     if random.randint(0, 100) < 3: # Adjust to increase difficulty (3 is easy, 8 is hardcore)
@@ -418,10 +440,10 @@ while not game_over:
 
 
 
-    if boss_star_active:
+    if boss_star_active: 
         boss_star.move()
         boss_star.draw()
-
+    
 
         # Check collision between projectiles and boss star
         for projectile in projectiles:
