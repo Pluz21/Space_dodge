@@ -1,5 +1,5 @@
 import pygame
-import random
+import random # Generate random numbers for the stars and bonuses
 import math # Needed for the log function for bonus scaling
 import os
 pygame.init()
@@ -39,15 +39,12 @@ BONUS_COLOR = (255, 0, 0)
 BONUS_TEXT_COLOR = (255, 255, 255)
 BONUS_FONT = pygame.font.SysFont("Quantico", 20)
 BONUS_VEL = 8
-SPAWN_BONUS_INTERVAL = 200
+SPAWN_BONUS_INTERVAL = 200 # in milliseconds
 
 # Star settings
 STAR_WIDTH = 10
 STAR_HEIGHT = 20
 STAR_VEL = 7.5
-STAR_VEL_INCREASE_INTERVAL = 20000  # Increase star velocity every 20 seconds
-
-
 
 # Projectile settings
 PROJECTILE_WIDTH = 3.5
@@ -55,7 +52,7 @@ PROJECTILE_HEIGHT = 10
 PROJECTILE_VEL = 15
 SPAWN_PROJECTILE_INTERVAL = 1000  # in milliseconds
 
-# Define font and timer variables
+# Define font variables
 TIMER_FONT = pygame.font.SysFont("Orbitron", 30)
 
 class Player:
@@ -63,16 +60,19 @@ class Player:
         self.rect = pygame.Rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
         self.side_shooting_enabled = False
     
-    def move(self, dx, dy):
-        if self.rect.x + dx > 0 and self.rect.x + dx + PLAYER_WIDTH < WIDTH:
+    # Checking that movement is within window boundaries
+    def move(self, dx, dy): 
+        if self.rect.x + dx > 0 and self.rect.x + dx + PLAYER_WIDTH < WIDTH:      
             self.rect.x += dx
         if self.rect.y + dy > 0 and self.rect.y + dy + PLAYER_HEIGHT < HEIGHT:
             self.rect.y += dy
 
     def shoot(self):
+        """ Angles for side shooting, you can add as many as you want to increase 
+        the amount of projectiles once side shooting is enabled"""
         projectiles = []
         if bonus_score >= 3 and self.side_shooting_enabled:
-            angles = [0, -15, 15]  # Angles for side shooting
+            angles = [0, -15, 15]  
             for angle in angles:
                 # Use negative sine for y-axis velocity
                 projectile = Projectile(
@@ -113,7 +113,7 @@ class Player:
 
     def increase_projectile_width(self):
         global PROJECTILE_WIDTH
-        PROJECTILE_WIDTH += 2 # Adjust the reduction amount as needed
+        PROJECTILE_WIDTH += 2 # Adjust the amount as needed to tweak difficulty
 
 
 class Star:
@@ -147,7 +147,7 @@ class Bonus:
 
     def move(self):
         self.y += BONUS_VEL
-        self.rect.y = self.y
+        self.rect.y = self.y // 1  # You can // x to adjust speed. (< 1 to make them go faster)
 
     def draw(self):
         pygame.draw.circle(WIN, "green", (self.rect.x + BONUS_RADIUS, self.rect.y + BONUS_RADIUS), BONUS_RADIUS)
@@ -348,6 +348,7 @@ while not game_over:
             if bonus_score >= 3:
                 for projectile in player.shoot():
                     projectiles.append(projectile)
+                    # This lets us add 
             else:
                 projectile = player.shoot()[0]
                 projectiles.append(projectile)
@@ -356,9 +357,9 @@ while not game_over:
             LAST_SHOT_TIME = current_time
 
     # Spawn stars randomly
-    if random.randint(0, 100) < 3:
+    if random.randint(0, 100) < 3: # Adjust to increase difficulty (3 is easy, 8 is hardcore)
         x = random.randint(0, WIDTH - STAR_WIDTH)
-        y = -STAR_HEIGHT
+        y = -STAR_HEIGHT    # Needed so the star appears off screen a bit
         star = Star(x, y)
         stars.append(star)
 
@@ -376,6 +377,11 @@ while not game_over:
 
     # Spawn bonuses randomly
     if random.randint(0, 1000) < 5 and pygame.time.get_ticks() - last_bonus_time > SPAWN_BONUS_INTERVAL:
+        """ Control the spawning of bonuses
+        randomly but with certain restrictions. 
+        The random number check and the time interval
+        check ensure that bonuses are not spawned too frequently, 
+        and there is a level of randomness involved in their appearance."""
         x = random.randint(0, WIDTH)
         y = -BONUS_RADIUS
         bonus = Bonus(x, y)
@@ -393,7 +399,7 @@ while not game_over:
         show_game_over_message(score, high_score)
         pygame.time.delay(3000)  # Delay for x000 seconds before quitting the game 
         break
-        game_over = True
+
 
 #handle boss star
     if boss_star_respawn_timer <= 0 and not boss_star_active:
