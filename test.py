@@ -78,8 +78,8 @@ class Player:
         """ Angles for side shooting, you can add as many as you want to increase 
         the amount of projectiles once side shooting is enabled"""
         projectiles = []
-        if bonus_score >= 3 and self.side_shooting_enabled:
-            angles = [0, -15, 15]  
+        if bonus_score >= 1 and self.side_shooting_enabled:
+            angles = [0, -15, 15, 20, 25, -15, -10]  
             for angle in angles:
                 # Use negative sine for y-axis velocity
                 projectile = Projectile(
@@ -111,12 +111,8 @@ class Player:
         WIN.blit(SpaceShip_scaled, self.rect)
         
     def reduce_projectile_spawn_interval(self):
-        global SPAWN_PROJECTILE_INTERVAL
-        scaling_factor = 0.1  
-        #Higher values will make the reduction more 
-        #powerful initially, while lower values will make it less powerful.
-        reduction_amount = int(150 * math.log10(1 + bonus_score) * scaling_factor)
-        SPAWN_PROJECTILE_INTERVAL -= reduction_amount
+        global SPAWN_PROJECTILE_INTERVAL       #change back to log function from main.py for better scaling
+        SPAWN_PROJECTILE_INTERVAL -= 400
 
     def increase_projectile_width(self):
         global PROJECTILE_WIDTH
@@ -263,7 +259,7 @@ def handle_collisions():
             player.reduce_projectile_spawn_interval()
             power_up_sound.play()
             player.increase_projectile_width()
-            if bonus_score >= 3:
+            if bonus_score >= 1:
                 player.enable_side_shooting()
 
     # Check collision between projectiles and stars
@@ -286,7 +282,7 @@ def handle_collisions():
     if boss_star_active and player.rect.colliderect(boss_star.rect):
         return True
 
-    return False
+    return False 
 
 def show_game_over_message(score, high_score):
     game_over_text = FONT.render("You Lost", True, (255, 255, 255))
@@ -317,7 +313,7 @@ score = 0
 high_score = 0
 bonus_score = 0
 spawn_projectile_time = pygame.time.get_ticks()
-star_velocity_increase_timer = pygame.time.get_ticks()
+
 
 # Handle the boss star
 boss_star_active = False
@@ -330,15 +326,12 @@ start_time = pygame.time.get_ticks()  # Move this line before the game loop
 boss_star_respawn_timer = 15000  # Adapts boss spawn time ( First appearance as well)
 boss_star_respawn_time = 0  # Time when the boss star was defeated
 
-
+# Read the highscore file and use the value as an integer to display on screen later
 try:
     with open("highscore.txt", "r") as file:
         high_score = int(file.read())
 except FileNotFoundError:
-    # If the file doesn't exist, create it and set the high score to 0
-    with open("highscore.txt", "w") as file:
-        file.write(str(high_score))
-
+    pass
 
 while not game_over:
     
@@ -368,7 +361,7 @@ while not game_over:
     current_time = pygame.time.get_ticks()
     if keys[pygame.K_SPACE]:
         if pygame.time.get_ticks() - spawn_projectile_time > SPAWN_PROJECTILE_INTERVAL:
-            if bonus_score >= 3:
+            if bonus_score >= 1:
                 for projectile in player.shoot():
                     projectiles.append(projectile)
             else:
@@ -419,7 +412,7 @@ while not game_over:
     # Handle collisions
     if handle_collisions():
         show_game_over_message(score, high_score)
-        pygame.time.delay(3000)  # Delay for x000 seconds before quitting the game 
+        pygame.time.delay(4000)  # Delay for x000 seconds before quitting the game 
         break
 
 
@@ -454,7 +447,7 @@ while not game_over:
                     boss_star_active = False
                     boss_star_respawn_time = pygame.time.get_ticks() + 5000
                     boss_star_respawn_timer = 15000
-                    score += 10  # Increase score when boss star is defeated
+                    score += 10  
                     boss_hit_sound.play()
 
     if boss_star_respawn_timer > 0:

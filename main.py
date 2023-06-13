@@ -317,7 +317,7 @@ score = 0
 high_score = 0
 bonus_score = 0
 spawn_projectile_time = pygame.time.get_ticks()
-star_velocity_increase_timer = pygame.time.get_ticks()
+
 
 # Handle the boss star
 boss_star_active = False
@@ -416,7 +416,7 @@ while not game_over:
     # Handle collisions
     if handle_collisions():
         show_game_over_message(score, high_score)
-        pygame.time.delay(3000)  # Delay for x000 seconds before quitting the game 
+        pygame.time.delay(4000)  # Delay for x000 seconds before quitting the game 
         break
 
 
