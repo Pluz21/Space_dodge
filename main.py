@@ -79,7 +79,7 @@ class Player:
         the amount of projectiles once side shooting is enabled"""
         projectiles = []
         if bonus_score >= 3 and self.side_shooting_enabled:
-            angles = [0, -15, 15]  
+            angles = [0, -15, 15, 25, -25, 30]  
             for angle in angles:
                 # Use negative sine for y-axis velocity
                 projectile = Projectile(
