@@ -286,7 +286,7 @@ def handle_collisions():
     if boss_star_active and player.rect.colliderect(boss_star.rect):
         return True
 
-    return False
+    return False 
 
 def show_game_over_message(score, high_score):
     game_over_text = FONT.render("You Lost", True, (255, 255, 255))
@@ -330,15 +330,12 @@ start_time = pygame.time.get_ticks()  # Move this line before the game loop
 boss_star_respawn_timer = 15000  # Adapts boss spawn time ( First appearance as well)
 boss_star_respawn_time = 0  # Time when the boss star was defeated
 
-
+# Read the highscore file and use the value as an integer to display on screen later
 try:
     with open("highscore.txt", "r") as file:
         high_score = int(file.read())
 except FileNotFoundError:
-    # If the file doesn't exist, create it and set the high score to 0
-    with open("highscore.txt", "w") as file:
-        file.write(str(high_score))
-
+    pass
 
 while not game_over:
     
@@ -454,7 +451,7 @@ while not game_over:
                     boss_star_active = False
                     boss_star_respawn_time = pygame.time.get_ticks() + 5000
                     boss_star_respawn_timer = 15000
-                    score += 10  # Increase score when boss star is defeated
+                    score += 10  
                     boss_hit_sound.play()
 
     if boss_star_respawn_timer > 0:
