@@ -2,6 +2,6 @@ env
 dist
 build
 stable.spec
-build/main
-Executable
+/Space_dodge/build/main
+/Space_dodge/Executable
 __pycache__
