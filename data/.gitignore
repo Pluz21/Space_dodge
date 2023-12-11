@@ -1,0 +1,5 @@
+env
+dist
+build
+stable.spec
+__pycache__
