@@ -2,4 +2,6 @@ env
 dist
 build
 stable.spec
+build/main
+Executable
 __pycache__
