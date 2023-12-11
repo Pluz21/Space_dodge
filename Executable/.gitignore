@@ -1,7 +1,0 @@
-env
-dist
-build
-stable.spec
-/Space_dodge/build/main
-/Space_dodge/Executable
-__pycache__
